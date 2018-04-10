@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/getwkt3" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
