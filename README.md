@@ -11,8 +11,11 @@ It differs from QGIS's Core copy functionality by only extracting the features W
 
 Based on the QGIS 2.0 Plugin of the same name by Hugo Ledoux https://github.com/hugoledoux/QGIS-getWKT. Migrated to QGIS 3.0 by Paul Skeen.
 
+# Compile (Windows)
+On a system with OSGeo, open the OSGeo Shell and run build.bat in the project folder. The release will be compiled into a folder named 'build'.
+
 # Changelog
-  1.0 Initial Release
+  1.0 Initial Release (WKB Support)
   1.1 Added support for EWKT
       Added support for JSON
 
