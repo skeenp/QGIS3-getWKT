@@ -12,8 +12,8 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="icon.svg"
-   inkscape:export-filename="C:\Users\pauls\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\getwkt3\icon.png"
+   sodipodi:docname="ewkt.svg"
+   inkscape:export-filename="P:\QGIS3-getWKT\ewkt.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <metadata
@@ -43,12 +43,12 @@
      id="namedview10"
      showgrid="false"
      inkscape:zoom="9.8333333"
-     inkscape:cx="12"
+     inkscape:cx="-5.8474577"
      inkscape:cy="12"
      inkscape:window-x="-8"
      inkscape:window-y="13"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg2" />
+     inkscape:current-layer="g4" />
   <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
   <g
      id="g4"
@@ -60,17 +60,17 @@
        r="10.607945"
        cy="12.071935"
        cx="12.125141"
-       style="fill:#195cc6;stroke:#2c62b2;stroke-width:2" />
+       style="fill:#338000;stroke:#225700;stroke-width:2;stroke-opacity:1" />
     <text
-       transform="scale(0.83431919,1.198582)"
+       transform="scale(0.83431922,1.198582)"
        font-weight="bold"
        xml:space="preserve"
        font-size="24"
        id="svg_5"
-       y="13.601156"
-       x="14.269982"
+       y="12.922388"
+       x="14.356009"
        stroke-linecap="null"
        stroke-linejoin="null"
-       style="font-weight:bold;font-size:9.7412014px;font-family:Sans-serif;text-anchor:middle;fill:#ffffff;stroke:#2c62b2;stroke-width:0;stroke-dasharray:none">WKT</text>
+       style="font-weight:bold;font-size:7.87401915px;font-family:Sans-serif;text-anchor:middle;fill:#ffffff;stroke:#2c62b2;stroke-width:0;stroke-dasharray:none">EWKT</text>
   </g>
 </svg>

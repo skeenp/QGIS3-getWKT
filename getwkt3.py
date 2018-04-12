@@ -86,16 +86,16 @@ class getwkt3:
 
 
     def add_action(
-        self,
-        icon_path,
-        text,
-        callback,
-        enabled_flag=True,
-        add_to_menu=True,
-        add_to_toolbar=True,
-        status_tip=None,
-        whats_this=None,
-        parent=None):
+            self,
+            icon_path,
+            text,
+            callback,
+            enabled_flag=True,
+            add_to_menu=True,
+            add_to_toolbar=True,
+            status_tip=None,
+            whats_this=None,
+            parent=None):
         """Add a toolbar icon to the toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
@@ -161,13 +161,26 @@ class getwkt3:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path = ':/plugins/getwkt3/icon.png'
+        icon_path = ':/plugins/getwkt3/wkt.png'
         self.add_action(
             icon_path,
             text=self.tr(u'Get WKT String'),
-            callback=self.run,
+            callback=self.run_wkt,
             parent=self.iface.mainWindow())
 
+        icon_path = ':/plugins/getwkt3/ewkt.png'
+        self.add_action(
+            icon_path,
+            text=self.tr(u'Get EWKT String'),
+            callback=self.run_ewkt,
+            parent=self.iface.mainWindow())
+
+        icon_path = ':/plugins/getwkt3/json.png'
+        self.add_action(
+            icon_path,
+            text=self.tr(u'Get JSON String'),
+            callback=self.run_json,
+            parent=self.iface.mainWindow())
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
@@ -179,8 +192,19 @@ class getwkt3:
         # remove the toolbar
         del self.toolbar
 
+    def run_wkt(self):
+        """Runs tool to extract WKT"""
+        self.run('wkt')
 
-    def run(self):
+    def run_ewkt(self):
+        """Runs tool to extract EWKT"""
+        self.run('ewkt')
+
+    def run_json(self):
+        """Runs tool to extract JSON"""
+        self.run('json')
+
+    def run(self, out_type):
         """Run method that performs all the real work"""
         mc = self.iface.mapCanvas()
         layer = mc.currentLayer()
@@ -202,8 +226,23 @@ class getwkt3:
                 self.dlg.wktTextEdit.setHtml('<strong style="color:red">'\
                 'ERROR:</strong> No selected features')
             else:
-                self.dlg.wktTextEdit.setText("{0}".format(
-                    feat[0].geometry().asWkt()))
+                if out_type == 'wkt':
+                    text = feat[0].geometry().asWkt()
+                elif out_type == 'ewkt':
+                    try:
+                        authid = layer.crs().authid()
+                        auth, srid = authid.split(':')
+                        if auth != 'EPSG':
+                            srid = -1
+                    except Exception:
+                        srid = -1
+                    wkt = feat[0].geometry().asWkt()
+                    text = 'SRID={0};{1}'.format(srid, wkt)
+                elif out_type == 'json':
+                    text = feat[0].geometry().asJson()
+                else:
+                    text = '[{0}] Not Implemented'.format(out_type)
+                self.dlg.wktTextEdit.setText("{0}".format(text))
         self.dlg.show()
         # Run the dialog event loop
         self.dlg.exec_()
