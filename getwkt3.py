@@ -211,7 +211,7 @@ class getwkt3:
         if layer is None:
             self.dlg.wktTextEdit.setHtml('<strong style="color:red">'\
             'ERROR:</strong> No selected layer')
-        elif layer.type() != 0:
+        elif layer.type() != QgsMapLayerType(0):
             self.dlg.wktTextEdit.setHtml('<strong style="color:red">'\
             'ERROR:</strong> Layer selected is not vector')
         elif layer.selectedFeatureCount() == 0:
