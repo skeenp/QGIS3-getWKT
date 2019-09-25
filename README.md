@@ -1,4 +1,4 @@
-Get WKT (QGIS 3.0)
+Get WKT (QGIS 3.8)
 ===========
 
 QGIS plugin that allows you to view the WKT,EWKT or JSON of a geometry.
@@ -15,10 +15,9 @@ Based on the QGIS 2.0 Plugin of the same name by Hugo Ledoux https://github.com/
 On a system with OSGeo, open the OSGeo Shell and run build.bat in the project folder. The release will be compiled into a folder named 'build'.
 
 # Changelog
-  1.0 Initial Release (WKB Support)
-  1.1 Added support for EWKT
-      Added support for JSON
+* 1.0 Initial Release (WKB Support)
+* 1.1 Added support for EWKT & JSON
+* 1.2 Added fix for 3.8 (Thanks imajic-unimelb https://github.com/imajic-unimelb) and support for making windows larger.
 
 # Future Plans
-
 Add option to surround string with ST_GEOMFROMTEXT/STGEOMFROMTEXT for use in PostGIS/MSSQL Spatial

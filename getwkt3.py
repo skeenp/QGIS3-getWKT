@@ -23,6 +23,10 @@
 """
 import os.path
 
+# Load Core
+from qgis.core import QgsMapLayerType
+
+# Load PyQt5
 from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
@@ -211,7 +215,7 @@ class getwkt3:
         if layer is None:
             self.dlg.wktTextEdit.setHtml('<strong style="color:red">'\
             'ERROR:</strong> No selected layer')
-        elif layer.type() != QgsMapLayerType(0):
+        elif layer.type() != QgsMapLayerType.VectorLayer:
             self.dlg.wktTextEdit.setHtml('<strong style="color:red">'\
             'ERROR:</strong> Layer selected is not vector')
         elif layer.selectedFeatureCount() == 0:
