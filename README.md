@@ -1,11 +1,15 @@
-Get WKT (QGIS 3.8)
+Get WKT (QGIS 3.12)
 ===========
 
 QGIS plugin that allows you to view the WKT,EWKT or JSON of a geometry.
 
-![](screenshot.png)
+![](screenshot_qgis.png)
 
 This plugin displays the selected features' WKT,EWKT or JSON representation.
+
+The number of decimal places returned by the tool can be specified in the tools settings. The auto setting takes a guess at the number of decimal places that are appropriate based on the layers CRS.
+
+![](screenshot_config.png)
 
 It differs from QGIS's Core copy functionality by only extracting the features WKT, rather than the entire record. Simply select a feature, press the button and the WKT,EWKT or JSON represenation will be displayed in a dialog box where you can copy its content for use in creating or updating geometries in SQL statements.
 
@@ -18,6 +22,7 @@ On a system with OSGeo, open the OSGeo Shell and run build.bat in the project fo
 * 1.0 Initial Release (WKB Support)
 * 1.1 Added support for EWKT & JSON
 * 1.2 Added fix for 3.8 (Thanks imajic-unimelb https://github.com/imajic-unimelb) and support for making windows larger.
+* 1.3 Added fix to align WKT using X and M values to standard, and to provide a mechanism to control the number of decimal places exported (Thanks heidivanparys https://github.com/heidivanparys). Minor change to build scripts and move to using plugins menu rather than vector
 
 # Future Plans
 Add option to surround string with ST_GEOMFROMTEXT/STGEOMFROMTEXT for use in PostGIS/MSSQL Spatial

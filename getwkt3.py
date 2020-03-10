@@ -24,7 +24,7 @@
 import os.path
 
 # Load Core
-from qgis.core import QgsMapLayerType
+from qgis.core import QgsMapLayerType, QgsUnitTypes, QgsSettings
 
 # Load PyQt5
 from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
@@ -35,9 +35,12 @@ from PyQt5.QtWidgets import QAction
 from .resources import *
 # Import the code for the dialog
 from .getwkt3_dialog import getwkt3Dialog
+from .getwkt3_config import getwkt3Config
 
 class getwkt3:
     """QGIS Plugin Implementation."""
+
+    s = QgsSettings()
 
     def __init__(self, iface):
         """Constructor.
@@ -66,10 +69,10 @@ class getwkt3:
                 QCoreApplication.installTranslator(self.translator)
         # Create the dialog (after translation) and keep reference
         self.dlg = getwkt3Dialog()
+        self.cfg = getwkt3Config()
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&Get WKT')
-        # TODO: We are going to let the user set this up in a future iteration
         self.toolbar = self.iface.addToolBar(u'getwkt3')
         self.toolbar.setObjectName(u'getwkt3')
 
@@ -154,7 +157,7 @@ class getwkt3:
             self.toolbar.addAction(action)
 
         if add_to_menu:
-            self.iface.addPluginToVectorMenu(
+            self.iface.addPluginToMenu(
                 self.menu,
                 action)
 
@@ -185,6 +188,14 @@ class getwkt3:
             text=self.tr(u'Get JSON String'),
             callback=self.run_json,
             parent=self.iface.mainWindow())
+
+        icon_path = ':/plugins/getwkt3/config.png'
+        self.add_action(
+            icon_path,
+            text=self.tr(u'Open Config'),
+            callback=self.open_config,
+            parent=self.iface.mainWindow(),
+            add_to_toolbar=False)
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
@@ -230,23 +241,136 @@ class getwkt3:
                 self.dlg.wktTextEdit.setHtml('<strong style="color:red">'\
                 'ERROR:</strong> No selected features')
             else:
-                if out_type == 'wkt':
-                    text = feat[0].geometry().asWkt()
-                elif out_type == 'ewkt':
-                    try:
-                        authid = layer.crs().authid()
-                        auth, srid = authid.split(':')
-                        if auth != 'EPSG':
-                            srid = -1
-                    except Exception:
+                #Get geom
+                geom = feat[0].geometry()
+                #Get srid
+                try:
+                    crs = layer.crs()
+                    authid = crs.authid()
+                    auth, srid = authid.split(':')
+                    if auth != 'EPSG':
                         srid = -1
-                    wkt = feat[0].geometry().asWkt()
+                except Exception:
+                    srid = -1
+                #Setup dp for output
+                dp_method = self.s.value("getwkt3/dpmethod")
+                if dp_method == "custom":
+                    dp_count = self.s.value("getwkt3/dpcustom")
+                elif dp_method == "auto":
+                    #Determine crs units
+                    crs_units = crs.mapUnits()
+                    #Allocate auto dp count based on crs units
+                    if crs_units == QgsUnitTypes.DistanceUnit.DistanceFeet:
+                        dp_count = 3
+                    elif crs_units == QgsUnitTypes.DistanceUnit.DistanceNauticalMiles:
+                        dp_count = 8
+                    elif crs_units == QgsUnitTypes.DistanceUnit.DistanceYards:
+                        dp_count = 3
+                    elif crs_units == QgsUnitTypes.DistanceUnit.DistanceMiles:
+                        dp_count = 8
+                    elif crs_units == QgsUnitTypes.DistanceUnit.DistanceMillimeters:
+                        dp_count = 0
+                    elif crs_units == QgsUnitTypes.DistanceUnit.DistanceCentimeters:
+                        dp_count = 2
+                    elif crs_units == QgsUnitTypes.DistanceUnit.DistanceMeters:
+                        dp_count = 4
+                    elif crs_units == QgsUnitTypes.DistanceUnit.DistanceKilometers:
+                        dp_count = 7
+                    elif crs_units == QgsUnitTypes.DistanceUnit.DistanceDegrees:
+                        dp_count = 8
+                    else:
+                        dp_count = None
+                else:
+                    dp_count = None
+                #Process export type
+                if out_type == 'wkt':
+                    wkt = geom.asWkt(dp_count) if dp_count else geom.asWkt()
+                    wkt = self.standardise_wkt(wkt)
+                    text = wkt
+                elif out_type == 'ewkt':
+                    wkt = geom.asWkt(dp_count) if dp_count else geom.asWkt()
+                    wkt = self.standardise_wkt(wkt)
                     text = 'SRID={0};{1}'.format(srid, wkt)
                 elif out_type == 'json':
-                    text = feat[0].geometry().asJson()
+                    text = geom.asJson(dp_count) if dp_count else geom.asJson()
                 else:
                     text = '[{0}] Not Implemented'.format(out_type)
                 self.dlg.wktTextEdit.setText("{0}".format(text))
         self.dlg.show()
         # Run the dialog event loop
         self.dlg.exec_()
+
+    def open_config(self):
+        """Opens config menu"""
+        self.cfg.show()
+        self.cfg.exec_()
+
+    def standardise_wkt(self, wkt):
+        #Setup standardisers
+        standards = {
+            "PointZM":"Point Z M",
+            "LineStringZM":"LineString Z M",
+            "PolygonZM":"Polygon Z M",
+            "MultiPointZM":"MultiPoint Z M",
+            "MultiLineStringZM":"MultiLineString Z M",
+            "MultiPolygonZM":"MultiPolygon Z M",
+            "GeometryCollectionZM":"GeometryCollection Z M",
+            "CircularStringZM":"CircularString Z M",
+            "CompoundCurveZM":"CompoundCurve Z M",
+            "CurvePolygonZM":"CurvePolygon Z M",
+            "MultiCurveZM":"MultiCurve Z M",
+            "MultiSurfaceZM":"MultiSurface Z M",
+            "TriangleZM":"Triangle Z M",
+            "Point25D":"Point Z",
+            "LineString25D":"LineString Z",
+            "Polygon25D":"Polygon Z",
+            "MultiPoint25D":"MultiPoint Z",
+            "MultiLineString25D":"MultiLineString Z",
+            "MultiPolygon25D":"MultiPolygon Z",
+            "PointZ":"Point Z",
+            "LineStringZ":"LineString Z",
+            "PolygonZ":"Polygon Z",
+            "TriangleZ":"Triangle Z",
+            "MultiPointZ":"MultiPoint Z",
+            "MultiLineStringZ":"MultiLineString Z",
+            "MultiPolygonZ":"MultiPolygon Z",
+            "GeometryCollectionZ":"GeometryCollection Z",
+            "CircularStringZ":"CircularString Z",
+            "CompoundCurveZ":"CompoundCurve Z",
+            "CurvePolygonZ":"CurvePolygon Z",
+            "MultiCurveZ":"MultiCurve Z",
+            "MultiSurfaceZ":"MultiSurface Z",
+            "PointM":"Point M",
+            "LineStringM":"LineString M",
+            "PolygonM":"Polygon M",
+            "TriangleM":"Triangle M",
+            "MultiPointM":"MultiPoint M",
+            "MultiLineStringM":"MultiLineString M",
+            "MultiPolygonM":"MultiPolygon M",
+            "GeometryCollectionM":"GeometryCollection M",
+            "CircularStringM":"CircularString M",
+            "CompoundCurveM":"CompoundCurve M",
+            "CurvePolygonM":"CurvePolygon M",
+            "MultiCurveM":"MultiCurve M",
+            "MultiSurfaceM":"MultiSurface M",
+            # "Point":"Point",
+            # "LineString":"LineString",
+            # "Polygon":"Polygon",
+            # "Triangle":"Triangle",
+            # "MultiPoint":"MultiPoint",
+            # "MultiLineString":"MultiLineString",
+            # "MultiPolygon":"MultiPolygon",
+            # "GeometryCollection":"GeometryCollection",
+            # "CircularString":"CircularString",
+            # "CompoundCurve":"CompoundCurve",
+            # "CurvePolygon":"CurvePolygon",
+            # "MultiCurve":"MultiCurve",
+            # "MultiSurface":"MultiSurface",
+            # "NoGeometry":"NoGeometry",
+            # "Unknown":"Unknown",
+            }
+        #Process all standisers
+        for key, value in standards.items():
+            wkt = wkt.replace(key,value)
+        #Return result
+        return wkt
