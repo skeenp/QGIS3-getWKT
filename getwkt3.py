@@ -255,7 +255,10 @@ class getwkt3:
                 #Setup dp for output
                 dp_method = self.s.value("getwkt3/dpmethod")
                 if dp_method == "custom":
-                    dp_count = self.s.value("getwkt3/dpcustom")
+                    try:
+                        dp_count = int(self.s.value("getwkt3/dpcustom"))
+                    else ValueError:
+                        dp_count = None
                 elif dp_method == "auto":
                     #Determine crs units
                     crs_units = crs.mapUnits()
