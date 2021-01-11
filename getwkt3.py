@@ -257,7 +257,7 @@ class getwkt3:
                 if dp_method == "custom":
                     try:
                         dp_count = int(self.s.value("getwkt3/dpcustom"))
-                    else ValueError:
+                    except ValueError:
                         dp_count = None
                 elif dp_method == "auto":
                     #Determine crs units
@@ -287,15 +287,15 @@ class getwkt3:
                     dp_count = None
                 #Process export type
                 if out_type == 'wkt':
-                    wkt = geom.asWkt(dp_count) if dp_count else geom.asWkt()
+                    wkt = geom.asWkt(dp_count) if not dp_count is None else geom.asWkt()
                     wkt = self.standardise_wkt(wkt)
                     text = wkt
                 elif out_type == 'ewkt':
-                    wkt = geom.asWkt(dp_count) if dp_count else geom.asWkt()
+                    wkt = geom.asWkt(dp_count) if not dp_count is None  else geom.asWkt()
                     wkt = self.standardise_wkt(wkt)
                     text = 'SRID={0};{1}'.format(srid, wkt)
                 elif out_type == 'json':
-                    text = geom.asJson(dp_count) if dp_count else geom.asJson()
+                    text = geom.asJson(dp_count) if not dp_count is None  else geom.asJson()
                 else:
                     text = '[{0}] Not Implemented'.format(out_type)
                 self.dlg.wktTextEdit.setText("{0}".format(text))
