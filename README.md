@@ -26,6 +26,6 @@ On a system with OSGeo, open the OSGeo Shell and run build.bat in the project fo
 * 1.4 Added fix for decimal precision setting not honouring type #7. Also a minor update to build process and squashed a bug not allowing an export of 0 zero decimal places.
 
 # Future Plans
-Add option to surround string with ST_GEOMFROMTEXT/STGEOMFROMTEXT for use in PostGIS/MSSQL Spatial
-Add option to force geometry demotion/promotion or to match source
-Add support for exporting with zero decimal places. Currently not working.
+Add option to pad string with ST_GEOMFROMTEXT/STGEOMFROMTEXT for use in PostGIS/MSSQL Spatial (Unknown ETA)
+Add option to force geometry demotion/promotion or to match source (Unknown ETA)
+Add option to copy text to clipboard and bypass text window (Unknown ETA due to limitation in the API)
