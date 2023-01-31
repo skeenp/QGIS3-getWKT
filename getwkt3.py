@@ -300,6 +300,7 @@ class getwkt3:
                     text = '[{0}] Not Implemented'.format(out_type)
                 self.dlg.wktTextEdit.setText("{0}".format(text))
         self.dlg.show()
+        self.dlg.activateWindow()
         # Run the dialog event loop
         self.dlg.exec_()
 
