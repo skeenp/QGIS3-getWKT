@@ -53,17 +53,31 @@ class getwkt3Config(QtWidgets.QDialog, FORM_CLASS):
         if not val:
             val = 10
         self.dp_numCustom.setValue(int(val))
+        # Setup selected default tool
+        self.tool_cmbDefault.clear()
+        self.tool_cmbDefault.addItems(["WKT", "EWKT", "JSON"])
+        tool = self.s.value("getwkt3/toolmethod")
+        tool_idx = self.tool_cmbDefault.findText(tool)
+        if tool_idx == -1:
+            tool_idx = 0
+        self.tool_cmbDefault.setCurrentIndex(tool_idx)
         #Connect events
         self.dp_radDefault.clicked.connect(self.dp_handleChange_Default)
         self.dp_radAuto.clicked.connect(self.dp_handleChange_Auto)
         self.dp_radCustom.clicked.connect(self.dp_handleChange_Custom)
         self.dp_numCustom.valueChanged.connect(self.dp_handleChange_CustomValue)
+        self.tool_cmbDefault.currentIndexChanged.connect(self.tool_handleDefaultChange)
 
     def handleHide(self):
         """Hide handle"""
         self.hide()
 
-    def dp_handleChange(self, type, value=17):
+    def tool_handleDefaultChange(self, value):
+        """Handle change to tool default method"""
+        #Update dp setting
+        self.s.setValue("getwkt3/toolmethod", self.tool_cmbDefault.currentText())
+    
+    def dp_handleChange(self, type):
         """Handle change to dp method"""
         #Update dp setting
         self.s.setValue("getwkt3/dpmethod", type)

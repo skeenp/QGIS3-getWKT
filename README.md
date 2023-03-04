@@ -1,13 +1,19 @@
 Get WKT (QGIS Plugin)
 ===========
 
-QGIS plugin that allows you to view the WKT,EWKT or JSON of a geometry.
+QGIS plugin that allows you to view the WKT, EWKT or JSON of a geometry.
 
-![](screenshot_qgis.png)
+![](screenshot_qgis_toolbar.png)
 
-This plugin displays the selected features' WKT,EWKT or JSON representation.
+This plugin displays the selected features' WKT,EWKT or JSON representation. Copy the textual representation of your feature and paste it into other apps and api's directly.
 
-The number of decimal places returned by the tool can be specified in the tools settings. The auto setting takes a guess at the number of decimal places that are appropriate based on the layers CRS.
+![](screenshot_qgis_tool.png)
+
+The plugin can be configured via the 'Plugins' menu. 
+
+![](screenshot_qgis_menu.png)
+
+The config allows users to configure the default tool selected on the Toolbar, as well as specify the number of decimal places in text exported via the tool. The auto setting takes a guess at the number of decimal places that are appropriate based on the layers CRS.
 
 ![](screenshot_config.png)
 
@@ -24,8 +30,8 @@ On a system with OSGeo, open the OSGeo Shell and run build.bat in the project fo
 * 1.2 Added fix for 3.8 (Thanks imajic-unimelb https://github.com/imajic-unimelb) and support for making windows larger.
 * 1.3 Added fix to align WKT using X and M values to standard, and to provide a mechanism to control the number of decimal places exported (Thanks heidivanparys https://github.com/heidivanparys #5). Minor change to build scripts and move to using plugins menu rather than vector
 * 1.4 Added fix for decimal precision setting not honouring type #7. Also a minor update to build process and squashed a bug not allowing an export of 0 zero decimal places.
+* 1.5 Reduced default number of buttons on toolbar and allow selection of default action #9. Merged changes from piomar123 (https://github.com/piomar123 #10 #11) to add a copy button and to ensure window is on top
 
 # Future Plans
-Add option to pad string with ST_GEOMFROMTEXT/STGEOMFROMTEXT for use in PostGIS/MSSQL Spatial (Unknown ETA)
-Add option to force geometry demotion/promotion or to match source (Unknown ETA)
-Add option to copy text to clipboard and bypass text window (Unknown ETA due to limitation in the API)
+* Add option to pad string with ST_GEOMFROMTEXT/STGEOMFROMTEXT for use in PostGIS/MSSQL Spatial (Unknown ETA)
+* Add option to force geometry demotion/promotion or to match source (Unknown ETA)

@@ -29,7 +29,7 @@ from qgis.core import QgsMapLayerType, QgsUnitTypes, QgsSettings
 # Load PyQt5
 from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QAction
+from PyQt5.QtWidgets import QAction, QMenu, QToolButton
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -99,10 +99,9 @@ class getwkt3:
             callback,
             enabled_flag=True,
             add_to_menu=True,
-            add_to_toolbar=True,
+            add_to_toolbar=None,
             status_tip=None,
-            whats_this=None,
-            parent=None):
+            whats_this=None):
         """Add a toolbar icon to the toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
@@ -123,27 +122,22 @@ class getwkt3:
             be added to the menu. Defaults to True.
         :type add_to_menu: bool
 
-        :param add_to_toolbar: Flag indicating whether the action should also
-            be added to the toolbar. Defaults to True.
+        :param add_to_toolbar: Toolbar to add action to. Defaults to None.
         :type add_to_toolbar: bool
 
         :param status_tip: Optional text to show in a popup when mouse pointer
             hovers over the action.
         :type status_tip: str
 
-        :param parent: Parent widget for the new action. Defaults None.
-        :type parent: QWidget
-
         :param whats_this: Optional text to show in the status bar when the
             mouse pointer hovers over the action.
 
-        :returns: The action that was created. Note that the action is also
-            added to self.actions list.
+        :returns: The action that was created.
         :rtype: QAction
         """
 
         icon = QIcon(icon_path)
-        action = QAction(icon, text, parent)
+        action = QAction(icon, text, self.iface.mainWindow())
         action.triggered.connect(callback)
         action.setEnabled(enabled_flag)
 
@@ -154,49 +148,65 @@ class getwkt3:
             action.setWhatsThis(whats_this)
 
         if add_to_toolbar:
-            self.toolbar.addAction(action)
+            add_to_toolbar.addAction(action)
 
         if add_to_menu:
             self.iface.addPluginToMenu(
                 self.menu,
                 action)
 
-        self.actions.append(action)
-
         return action
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
-
+        # Setup wkt button
         icon_path = ':/plugins/getwkt3/wkt.png'
-        self.add_action(
+        self.btn_wkt = self.add_action(
             icon_path,
             text=self.tr(u'Get WKT String'),
-            callback=self.run_wkt,
-            parent=self.iface.mainWindow())
-
+            callback=self.run_wkt)
+        # Setup ewkt button
         icon_path = ':/plugins/getwkt3/ewkt.png'
-        self.add_action(
+        self.btn_ewkt = self.add_action(
             icon_path,
             text=self.tr(u'Get EWKT String'),
-            callback=self.run_ewkt,
-            parent=self.iface.mainWindow())
-
+            callback=self.run_ewkt)
+        # Setup json button
         icon_path = ':/plugins/getwkt3/json.png'
-        self.add_action(
+        self.btn_json = self.add_action(
             icon_path,
             text=self.tr(u'Get JSON String'),
-            callback=self.run_json,
-            parent=self.iface.mainWindow())
-
+            callback=self.run_json)
+        # Setup config button
         icon_path = ':/plugins/getwkt3/config.png'
-        self.add_action(
+        self.btn_settings = self.add_action(
             icon_path,
             text=self.tr(u'Open Config'),
-            callback=self.open_config,
-            parent=self.iface.mainWindow(),
-            add_to_toolbar=False)
-
+            callback=self.open_config)
+        # Build popup menu
+        self.popupMenu = QMenu( self.iface.mainWindow() )
+        self.popupMenu.addAction( self.btn_wkt )
+        self.popupMenu.addAction( self.btn_ewkt )
+        self.popupMenu.addAction( self.btn_json )
+        # Setup tll button
+        self.toolButton = QToolButton()
+        self.toolButton.setMenu( self.popupMenu )
+        # Set default button
+        self.set_default_button()
+        # Set popup mode
+        self.toolButton.setPopupMode(QToolButton.MenuButtonPopup)
+        #Add widget to toolbar
+        self.toolbar.addWidget(self.toolButton)
+    
+    # Helper function to set default button
+    def set_default_button(self):
+        if self.s.value("getwkt3/toolmethod") == "EWKT":
+            self.toolButton.setDefaultAction(self.btn_ewkt)
+        elif self.s.value("getwkt3/toolmethod") == "JSON":
+            self.toolButton.setDefaultAction(self.btn_json)
+        else:
+            self.toolButton.setDefaultAction(self.btn_wkt)
+        
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
@@ -308,7 +318,7 @@ class getwkt3:
         """Opens config menu"""
         self.cfg.show()
         self.cfg.exec_()
-
+        
     def standardise_wkt(self, wkt):
         #Setup standardisers
         standards = {
