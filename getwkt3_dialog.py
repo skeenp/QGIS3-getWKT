@@ -25,6 +25,9 @@ import os
 
 from PyQt5 import uic
 from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QApplication
+from qgis.core import Qgis
+from qgis.utils import iface
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'getwkt3_dialog_base.ui'))
@@ -36,7 +39,19 @@ class getwkt3Dialog(QtWidgets.QDialog, FORM_CLASS):
         super(getwkt3Dialog, self).__init__(parent)
         self.setupUi(self)
         self.pushButton.clicked.connect(self.handleHide)
+        self.copyButton.clicked.connect(self.copyAndHide)
 
     def handleHide(self):
         """Hide handle"""
         self.hide()
+
+    def copyAndHide(self):
+        """Copy the WKT content and close"""
+        clipboard = QApplication.clipboard()
+        wkt_text = self.wktTextEdit.toPlainText()
+        if "ERROR" in wkt_text:
+            iface.messageBar().pushMessage("Get WKT", "There is no WKT to copy!", level=Qgis.Warning, duration=5)
+            return
+        clipboard.setText(wkt_text)
+        iface.messageBar().pushMessage("Get WKT", "WKT copied to clipboard", level=Qgis.Info, duration=5)
+        self.handleHide()
