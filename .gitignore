@@ -2,3 +2,4 @@ QGIS3-getWKT
 resources.py
 .vscode
 *.zip
+getwkt3_gpt.py

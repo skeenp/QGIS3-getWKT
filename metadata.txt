@@ -12,7 +12,7 @@
 name=Get WKT
 qgisMinimumVersion=3.8
 description=This plugin displays the selected features' WKT,EWKT or JSON representation.
-version=1.5
+version=1.6
 author=Paul Skeen
 email=paulskeen@spatialecology.com.au
 

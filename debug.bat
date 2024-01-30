@@ -2,8 +2,8 @@ rem Build Plugin
 call build.bat
 
 rem Clean old plugin
-rmdir /s /q "%APPDATA%\QGIS\QGIS3\profiles\default\python\plugins\getwkt"
-mkdir "%APPDATA%\QGIS\QGIS3\profiles\default\python\plugins\getwkt"
+rmdir /s /q "%APPDATA%\QGIS\QGIS3\profiles\default\python\plugins\getwkt_dev"
+mkdir "%APPDATA%\QGIS\QGIS3\profiles\default\python\plugins\getwkt_dev"
 
 rem Move plugin to plugins folder
-xcopy  /s /y QGIS3-getWKT "%APPDATA%\QGIS\QGIS3\profiles\default\python\plugins\getwkt\"
+xcopy  /s /y QGIS3-getWKT "%APPDATA%\QGIS\QGIS3\profiles\default\python\plugins\getwkt_dev\"

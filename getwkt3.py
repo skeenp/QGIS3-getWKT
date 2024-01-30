@@ -27,7 +27,7 @@ import os.path
 from qgis.core import QgsMapLayerType, QgsUnitTypes, QgsSettings
 
 # Load PyQt5
-from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
+from PyQt5.QtCore import QLocale, QTranslator, qVersion, QCoreApplication
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QMenu, QToolButton
 
@@ -55,18 +55,13 @@ class getwkt3:
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
         # initialize locale
-        locale = QSettings().value('locale/userLocale')[0:2]
-        locale_path = os.path.join(
-            self.plugin_dir,
-            'i18n',
-            'getwkt3_{}.qm'.format(locale))
-
-        if os.path.exists(locale_path):
+        self.locale: str = QgsSettings().value("locale/userLocale", QLocale().name())[0:2]
+        locale_path: str = os.path.join(self.plugin_dir , "resources" , "i18n" , f"getwkt3_{self.locale}.qm")
+        if os.path.exists(self.locale):
             self.translator = QTranslator()
             self.translator.load(locale_path)
-
             if qVersion() > '4.3.3':
-                QCoreApplication.installTranslator(self.translator)
+                QCoreApplication.installTranslator(self.translator)   
         # Create the dialog (after translation) and keep reference
         self.dlg = getwkt3Dialog()
         self.cfg = getwkt3Config()
