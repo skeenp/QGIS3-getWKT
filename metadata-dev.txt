@@ -9,14 +9,14 @@
 # Mandatory items:
 
 [general]
-name=Get WKT
+name=Get WKT (DEV)
 qgisMinimumVersion=3.34
-description=This plugin displays the selected features' WKT, EWKT or JSON representation.
-version=1.7
+description=This plugin displays the selected features' WKT,EWKT or JSON representation.
+version=dev
 author=Paul Skeen
 email=paulskeen@spatialecology.com.au
 
-about=This plugin displays the selected features' WKT, EWKT or JSON representation. It differs from QGIS's Core copy functionality by only extracting the features WKT, rather than the entire record. Simply select a feature, press the button and the WKT, EWKT or JSON represenation will be displayed in a dialog box where you can copy its content for use in creating or updating geometries in SQL statements. Based on the original version for QGIS 2 by Hugo Ledoux at https://github.com/hugoledoux/QGIS-getWKT
+about=DEV
 
 tracker=https://github.com/skeenp/QGIS3-getWKT/issues
 repository=https://github.com/skeenp/QGIS3-getWKT
@@ -34,7 +34,7 @@ category=Plugins
 icon=wkt.png
 
 # experimental flag
-experimental=False
+experimental=True
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False

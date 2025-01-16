@@ -13,7 +13,11 @@ The plugin can be configured via the 'Plugins' menu.
 
 ![](screenshot_qgis_menu.png)
 
-The config allows users to configure the default tool selected on the Toolbar, as well as specify the number of decimal places in text exported via the tool. The auto setting takes a guess at the number of decimal places that are appropriate based on the layers CRS.
+The config allows users to configure the default tool selected on the Toolbar, as well as specify the number of decimal places in text exported via the tool. The auto setting takes a guess at the number of decimal places that are appropriate based on the input layers CRS.
+
+Users can also opt to support multi geometries via either multi-types or geometry collections. The default is for only single feature selections to be supported.
+
+The outptu CRS can now be supplied by specifying an ESPG code. The default is -1 which does not apply a transformation. This is useful if you have multiple source datasets and want to consistently move data to a single target with a specific CRS.
 
 ![](screenshot_config.png)
 
@@ -32,7 +36,8 @@ On a system with OSGeo, open the OSGeo Shell and run build.bat in the project fo
 * 1.4 Added fix for decimal precision setting not honouring type #7. Also a minor update to build process and squashed a bug not allowing an export of 0 zero decimal places.
 * 1.5 Reduced default number of buttons on toolbar and allow selection of default action #9. Merged changes from piomar123 (https://github.com/piomar123 #10 #11) to add a copy button and to ensure window is on top
 * 1.6 Bug Fixes
-
+* 1.7 Added support to export to multi and geom collection types and support reprojection via config
+* 
 # Future Plans
 * Add option to pad string with ST_GEOMFROMTEXT/STGEOMFROMTEXT for use in PostGIS/MSSQL Spatial (Unknown ETA)
-* Add option to force geometry demotion/promotion or to match source (Unknown ETA)
+* Add option for ESRI Json export

@@ -1,117 +1,175 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>getwkt3ConfigBase</class>
- <widget class="QDialog" name="getwkt3ConfigBase">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>333</width>
-    <height>237</height>
-   </rect>
-  </property>
-  <property name="windowTitle">
-   <string>Get WKT</string>
-  </property>
-  <property name="windowIcon">
-   <iconset>
-    <normaloff>wkt.png</normaloff>wkt.png</iconset>
-  </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QLabel" name="lblTitle">
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>GetWKT3 Config</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="tool_lblActive">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Active Tool</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="tool_lblLabel">
-       <property name="text">
-        <string>Setting the active tool requires restart to be applied</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="tool_cmbDefault"/>
-     </item>
-     <item>
-      <widget class="QLabel" name="dp_lblSubTitle">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Decimal Place Selector</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="dp_radDefault">
-       <property name="text">
-        <string>Do not truncate decimal places (Default)</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="dp_radAuto">
-       <property name="text">
-        <string>Automatically truncate decimal places</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="dp_radCustom">
-       <property name="text">
-        <string>Define a custom number of decimal places to export</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSpinBox" name="dp_numCustom">
-       <property name="maximum">
-        <number>20</number>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnAccept">
-       <property name="text">
-        <string>OK</string>
-       </property>
-      </widget>
-     </item>
+  <class>getwkt3ConfigBase</class>
+  <widget class="QDialog" name="getwkt3ConfigBase">
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>340</width>
+        <height>320</height>
+      </rect>
+    </property>
+    <property name="windowTitle">
+      <string>Get WKT</string>
+    </property>
+    <property name="windowIcon">
+      <iconset>
+        <normaloff>wkt.png</normaloff>wkt.png</iconset>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+        <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+            <widget class="QLabel" name="lblTitle">
+              <property name="font">
+                <font>
+                  <pointsize>12</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                </font>
+              </property>
+              <property name="text">
+                <string>GetWKT3 Config</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QLabel" name="tool_lblActive">
+              <property name="font">
+                <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                </font>
+              </property>
+              <property name="text">
+                <string>Active Tool</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QLabel" name="tool_lblLabel">
+              <property name="text">
+                <string>Setting the active tool requires restart to be applied</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QComboBox" name="tool_cmbDefault"/>
+          </item>
+          <item>
+            <widget class="QLabel" name="dp_lblSubTitle">
+              <property name="font">
+                <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                </font>
+              </property>
+              <property name="text">
+                <string>Decimal Place Selector</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QRadioButton" name="dp_radDefault">
+              <property name="text">
+                <string>Do not truncate decimal places (Default)</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QRadioButton" name="dp_radAuto">
+              <property name="text">
+                <string>Automatically truncate decimal places</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QRadioButton" name="dp_radCustom">
+              <property name="text">
+                <string>Define a custom number of decimal places to export</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QSpinBox" name="dp_numCustom">
+              <property name="maximum">
+                <number>20</number>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QLabel" name="ms_lblMultiSelect">
+              <property name="font">
+                <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                </font>
+              </property>
+              <property name="text">
+                <string>Multi Selections</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QCheckBox" name="ms_chkMultiExport">
+              <property name="text">
+                <string>Enable Multi Selection Exports</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QRadioButton" name="ms_radMulti">
+              <property name="text">
+                <string>Multipart Feature</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QRadioButton" name="ms_radGeomCollection">
+              <property name="text">
+                <string>Geometry Collection</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QLabel" name="srs_lblOutSrs">
+              <property name="font">
+                <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                </font>
+              </property>
+              <property name="text">
+                <string>Output SRS</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QLabel" name="srs_lblExplanation">
+              <property name="text">
+                <string>This is to set the output SRS (as an EPSG Code), with -1 being no reprojection (default)</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QLineEdit" name="srs_intOutSrs">
+              <property name="text">
+                <string>-1</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QPushButton" name="btnAccept">
+              <property name="text">
+                <string>OK</string>
+              </property>
+            </widget>
+          </item>
+        </layout>
+      </item>
     </layout>
-   </item>
-  </layout>
- </widget>
- <resources/>
- <connections/>
+  </widget>
+  <resources/>
+  <connections/>
 </ui>

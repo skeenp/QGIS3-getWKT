@@ -3,3 +3,5 @@ resources.py
 .vscode
 *.zip
 getwkt3_gpt.py
+esri.png
+esri.svg
