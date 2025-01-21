@@ -24,7 +24,7 @@
 import os.path
 
 # Load Core
-from qgis.core import QgsMapLayerType, QgsUnitTypes, QgsSettings
+from qgis.core import QgsMapLayerType, QgsUnitTypes, QgsSettings, QgsGeometry, QgsGeometryCollection, QgsCoordinateReferenceSystem, QgsWkbTypes, QgsCoordinateTransform, QgsProject
 
 # Load PyQt5
 from PyQt5.QtCore import QLocale, QTranslator, qVersion, QCoreApplication
@@ -36,6 +36,8 @@ from .resources import *
 # Import the code for the dialog
 from .getwkt3_dialog import getwkt3Dialog
 from .getwkt3_config import getwkt3Config
+
+import json
 
 class getwkt3:
     """QGIS Plugin Implementation."""
@@ -158,21 +160,20 @@ class getwkt3:
         icon_path = ':/plugins/getwkt3/wkt.png'
         self.btn_wkt = self.add_action(
             icon_path,
-            text=self.tr(u'Get WKT String'),
+            text=self.tr(u'Get WKT'),
             callback=self.run_wkt)
         # Setup ewkt button
         icon_path = ':/plugins/getwkt3/ewkt.png'
         self.btn_ewkt = self.add_action(
             icon_path,
-            text=self.tr(u'Get EWKT String'),
+            text=self.tr(u'Get EWKT'),
             callback=self.run_ewkt)
         # Setup json button
         icon_path = ':/plugins/getwkt3/json.png'
         self.btn_json = self.add_action(
             icon_path,
-            text=self.tr(u'Get JSON String'),
+            text=self.tr(u'Get JSON'),
             callback=self.run_json)
-        # Setup config button
         icon_path = ':/plugins/getwkt3/config.png'
         self.btn_settings = self.add_action(
             icon_path,
@@ -180,12 +181,12 @@ class getwkt3:
             callback=self.open_config)
         # Build popup menu
         self.popupMenu = QMenu( self.iface.mainWindow() )
-        self.popupMenu.addAction( self.btn_wkt )
-        self.popupMenu.addAction( self.btn_ewkt )
-        self.popupMenu.addAction( self.btn_json )
+        self.popupMenu.addAction( self.btn_wkt)
+        self.popupMenu.addAction( self.btn_ewkt)
+        self.popupMenu.addAction( self.btn_json)
         # Setup tll button
         self.toolButton = QToolButton()
-        self.toolButton.setMenu( self.popupMenu )
+        self.toolButton.setMenu( self.popupMenu)
         # Set default button
         self.set_default_button()
         # Set popup mode
@@ -225,90 +226,138 @@ class getwkt3:
         self.run('json')
 
     def run(self, out_type):
-        """Run method that performs all the real work"""
-        mc = self.iface.mapCanvas()
-        layer = mc.currentLayer()
-        if layer is None:
-            self.dlg.wktTextEdit.setHtml('<strong style="color:red">'\
-            'ERROR:</strong> No selected layer')
-        elif layer.type() != QgsMapLayerType.VectorLayer:
-            self.dlg.wktTextEdit.setHtml('<strong style="color:red">'\
-            'ERROR:</strong> Layer selected is not vector')
-        elif layer.selectedFeatureCount() == 0:
-            self.dlg.wktTextEdit.setHtml('<strong style="color:red">'\
-            'ERROR:</strong> No feature selected')
-        elif layer.selectedFeatureCount() > 1:
-            self.dlg.wktTextEdit.setHtml('<strong style="color:red">'\
-            'ERROR:</strong> More than one feature is selected')
-        else:
-            feat = layer.selectedFeatures()
-            if feat is None:
-                self.dlg.wktTextEdit.setHtml('<strong style="color:red">'\
-                'ERROR:</strong> No selected features')
-            else:
-                #Get geom
-                geom = feat[0].geometry()
-                #Get srid
-                try:
-                    crs = layer.crs()
-                    authid = crs.authid()
-                    auth, srid = authid.split(':')
-                    if auth != 'EPSG':
-                        srid = -1
-                except Exception:
-                    srid = -1
-                #Setup dp for output
-                dp_method = self.s.value("getwkt3/dpmethod")
-                if dp_method == "custom":
-                    try:
-                        dp_count = int(self.s.value("getwkt3/dpcustom"))
-                    except ValueError:
-                        dp_count = None
-                elif dp_method == "auto":
-                    #Determine crs units
-                    crs_units = crs.mapUnits()
-                    #Allocate auto dp count based on crs units
-                    if crs_units == QgsUnitTypes.DistanceUnit.DistanceFeet:
-                        dp_count = 3
-                    elif crs_units == QgsUnitTypes.DistanceUnit.DistanceNauticalMiles:
-                        dp_count = 8
-                    elif crs_units == QgsUnitTypes.DistanceUnit.DistanceYards:
-                        dp_count = 3
-                    elif crs_units == QgsUnitTypes.DistanceUnit.DistanceMiles:
-                        dp_count = 8
-                    elif crs_units == QgsUnitTypes.DistanceUnit.DistanceMillimeters:
-                        dp_count = 0
-                    elif crs_units == QgsUnitTypes.DistanceUnit.DistanceCentimeters:
-                        dp_count = 2
-                    elif crs_units == QgsUnitTypes.DistanceUnit.DistanceMeters:
-                        dp_count = 4
-                    elif crs_units == QgsUnitTypes.DistanceUnit.DistanceKilometers:
-                        dp_count = 7
-                    elif crs_units == QgsUnitTypes.DistanceUnit.DistanceDegrees:
-                        dp_count = 8
-                    else:
-                        dp_count = None
-                else:
-                    dp_count = None
-                #Process export type
-                if out_type == 'wkt':
-                    wkt = geom.asWkt(dp_count) if not dp_count is None else geom.asWkt()
-                    wkt = self.standardise_wkt(wkt)
-                    text = wkt
-                elif out_type == 'ewkt':
-                    wkt = geom.asWkt(dp_count) if not dp_count is None  else geom.asWkt()
-                    wkt = self.standardise_wkt(wkt)
-                    text = 'SRID={0};{1}'.format(srid, wkt)
-                elif out_type == 'json':
-                    text = geom.asJson(dp_count) if not dp_count is None  else geom.asJson()
-                else:
-                    text = '[{0}] Not Implemented'.format(out_type)
-                self.dlg.wktTextEdit.setText("{0}".format(text))
+        """Runs tool to extract WKT"""
+        result = self._run(out_type)
+        # Show form
+        self.dlg.copyButton.setVisible(True)
         self.dlg.show()
+        if not result:
+            self.dlg.copyButton.setVisible(False)
         self.dlg.activateWindow()
         # Run the dialog event loop
         self.dlg.exec_()
 
+    def _run(self, out_type):
+        """Run method that performs all the real work"""
+        mc = self.iface.mapCanvas()
+        selected_layer = mc.currentLayer()
+        # Check if there is a selected layer
+        if selected_layer is None:
+            self.dlg.wktTextEdit.setHtml('<strong style="color:red">'\
+            'ERROR:</strong> No selected layer')
+            return False
+        # Check if selected layer is vector
+        if selected_layer.type() != QgsMapLayerType.VectorLayer:
+            self.dlg.wktTextEdit.setHtml('<strong style="color:red">'\
+            'ERROR:</strong> Layer selected is not vector')
+            return False
+        # Check if no features are selected
+        if selected_layer.selectedFeatureCount() == 0:
+            self.dlg.wktTextEdit.setHtml('<strong style="color:red">'\
+            'ERROR:</strong> No feature selected')
+            return False
+        # Check requested srs
+        out_srs_epsg = self.s.value("getwkt3/srid", -1)
+        try:
+            out_srs_epsg = int(out_srs_epsg)
+        except ValueError:
+            self.dlg.wktTextEdit.setHtml('<strong style="color:red"> ERROR:</strong> SRID must be an integer')
+            return False
+        # Load the SRS into an object for later use
+        in_srs = selected_layer.crs()
+        out_srs = None
+        if out_srs_epsg != -1:
+            out_srs = QgsCoordinateReferenceSystem()
+            if not out_srs.createFromSrid(out_srs_epsg):
+                self.dlg.wktTextEdit.setHtml(f'<strong style="color:red">ERROR:</strong> Unknown or Invalid SRID {out_srs_epsg}')
+                return False
+        # Get multi select setting
+        multiselect = self.s.value("getwkt3/multiselect", False, bool)
+        multiselecttype = self.s.value("getwkt3/multiselecttype")
+        # Collect selected features
+        selected_features = selected_layer.selectedFeatures()
+        if not multiselect and len(selected_features) > 1:
+            self.dlg.wktTextEdit.setHtml('<strong style="color:red">ERROR:</strong> More than one feature is selected. Multi sections are now supported but need to be enabled in the plugins config via Plugins -> Get WKT -> Open Config')
+            return False
+        # Get geoms from selected features and reproject if required
+        geoms = []
+        # Setup transform
+        transform = QgsCoordinateTransform(in_srs, out_srs, QgsProject.instance())
+        # Process all selected features
+        geoms = []
+        for f in selected_features:
+            geom = f.geometry()
+            if out_srs and not in_srs == out_srs:
+                try:
+                    # Transform the geometry to the target CRS
+                    geom.transform(transform)
+                except Exception as e:
+                    self.dlg.wktTextEdit.setHtml(f'<strong style="color:red">ERROR:</strong> Feature reprojection failed: {str(e)}')
+                    return False
+            geoms.append(geom)
+        # Determine action
+        if multiselect:
+            # Collect as multi part
+            if multiselecttype == 'multi':
+                # Collect geometries
+                geom = QgsGeometry.collectGeometry(geoms)
+                geom.convertToMultiType()
+            elif multiselecttype == 'collection':
+                geom = geoms
+            else:
+                self.dlg.wktTextEdit.setHtml(f"<strong style='color:red'>ERROR:</strong> Multiselect type '{multiselecttype}' not supported")
+                return False
+        else:
+            geom = geoms[0]   
+        #Setup dp for output
+        dp_method = self.s.value("getwkt3/dpmethod")
+        if dp_method == "custom":
+            try:
+                dp_count = int(self.s.value("getwkt3/dpcustom"))
+            except ValueError:
+                dp_count = None
+        elif dp_method == "auto":
+            #Determine crs units
+            crs_units = crs.mapUnits()
+            #Allocate auto dp count based on crs units
+            dp_count = {
+                QgsUnitTypes.DistanceUnit.DistanceFeet: 3,
+                QgsUnitTypes.DistanceUnit.DistanceNauticalMiles: 8,
+                QgsUnitTypes.DistanceUnit.DistanceYards: 3,
+                QgsUnitTypes.DistanceUnit.DistanceMiles: 8,
+                QgsUnitTypes.DistanceUnit.DistanceMillimeters: 0,
+                QgsUnitTypes.DistanceUnit.DistanceCentimeters: 2,
+                QgsUnitTypes.DistanceUnit.DistanceMeters: 4,
+                QgsUnitTypes.DistanceUnit.DistanceKilometers: 7,
+                QgsUnitTypes.DistanceUnit.DistanceDegrees: 8
+            }.get(crs_units, None)
+        else:
+            dp_count = None
+        #Collect wkt
+        if out_type == 'wkt' or out_type == 'ewkt':
+            if multiselecttype == 'collection':
+                wkt = f"GEOMETRYCOLLECTION ({', '.join([g.asWkt(dp_count) if not dp_count is None else g.asWkt() for g in geom])})"
+            else:
+                wkt = geom.asWkt(dp_count) if not dp_count is None else geom.asWkt()
+            wkt = self.standardise_wkt(wkt)
+            if out_type == 'ewkt':
+                text = 'SRID={0};{1}'.format(out_srs_epsg, wkt)
+            else:
+                text = wkt.upper()
+        elif out_type == 'json':
+            if multiselecttype == 'collection':
+                json_d = {"type":"GeometryCollection","geometries":[]}
+                json_d["geometries"] = [json.loads(g.asJson(dp_count)) if not dp_count is None else json.loads(g.asJson()) for g in geom]
+                json_s = json.dumps(json_d)
+            else:
+                json_s = geom.asJson(dp_count) if not dp_count is None else geom.asJson()
+            text = json_s
+        else:
+            text = '[{0}] Not Implemented'.format(out_type)
+        self.dlg.wktTextEdit.setText("{0}".format(text))
+        # Return true on success
+        return True
+    
     def open_config(self):
         """Opens config menu"""
         self.cfg.show()
@@ -369,7 +418,7 @@ class getwkt3:
             # "MultiPoint":"MultiPoint",
             # "MultiLineString":"MultiLineString",
             # "MultiPolygon":"MultiPolygon",
-            # "GeometryCollection":"GeometryCollection",
+            "GeometryCollection":"GeometryCollection",
             # "CircularString":"CircularString",
             # "CompoundCurve":"CompoundCurve",
             # "CurvePolygon":"CurvePolygon",
