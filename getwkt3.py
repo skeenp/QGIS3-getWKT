@@ -267,8 +267,8 @@ class getwkt3:
         in_srs = selected_layer.crs()
         out_srs = None
         if out_srs_epsg != -1:
-            out_srs = QgsCoordinateReferenceSystem()
-            if not out_srs.createFromSrid(out_srs_epsg):
+            out_srs = QgsCoordinateReferenceSystem(f"EPSG:{out_srs_epsg}")
+            if not out_srs.isValid():
                 self.dlg.wktTextEdit.setHtml(f'<strong style="color:red">ERROR:</strong> Unknown or Invalid SRID {out_srs_epsg}')
                 return False
         # Get multi select setting
@@ -281,13 +281,20 @@ class getwkt3:
             return False
         # Get geoms from selected features and reproject if required
         geoms = []
-        # Setup transform
-        transform = QgsCoordinateTransform(in_srs, out_srs, QgsProject.instance())
+        # Setup transform if required
+        transform = None
+        try:
+            # Check out srs
+            if out_srs and not in_srs == out_srs:
+                transform = QgsCoordinateTransform(in_srs, out_srs, QgsProject.instance())
+        except Exception as e:
+            self.dlg.wktTextEdit.setHtml(f'<strong style="color:red">ERROR:</strong> Error occured setting up transformation object. Please check the layer and output SRS {str(e)}')
+            return False
         # Process all selected features
         geoms = []
         for f in selected_features:
             geom = f.geometry()
-            if out_srs and not in_srs == out_srs:
+            if transform:
                 try:
                     # Transform the geometry to the target CRS
                     geom.transform(transform)
