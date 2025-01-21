@@ -37,6 +37,7 @@ On a system with OSGeo, open the OSGeo Shell and run build.bat in the project fo
 * 1.5 Reduced default number of buttons on toolbar and allow selection of default action #9. Merged changes from piomar123 (https://github.com/piomar123 #10 #11) to add a copy button and to ensure window is on top
 * 1.6 Bug Fixes
 * 1.7 Added support to export to multi and geom collection types and support reprojection via config
+* 1.7.1 Bug Fixes
 * 
 # Future Plans
 * Add option to pad string with ST_GEOMFROMTEXT/STGEOMFROMTEXT for use in PostGIS/MSSQL Spatial (Unknown ETA)
