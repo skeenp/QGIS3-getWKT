@@ -325,7 +325,7 @@ class getwkt3:
                 dp_count = None
         elif dp_method == "auto":
             #Determine crs units
-            crs_units = crs.mapUnits()
+            crs_units = out_srs.mapUnits()
             #Allocate auto dp count based on crs units
             dp_count = {
                 QgsUnitTypes.DistanceUnit.DistanceFeet: 3,
