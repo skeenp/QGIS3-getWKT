@@ -17,12 +17,16 @@ The config allows users to configure the default tool selected on the Toolbar, a
 
 Users can also opt to support multi geometries via either multi-types or geometry collections. The default is for only single feature selections to be supported.
 
-The outptu CRS can now be supplied by specifying an ESPG code. The default is -1 which does not apply a transformation. This is useful if you have multiple source datasets and want to consistently move data to a single target with a specific CRS.
+The output CRS can now be supplied by specifying an EPSG code. The default is -1 which does not apply a transformation. This is useful if you have multiple source datasets and want to consistently move data to a single target with a specific CRS.
 
 ![](screenshot_config.png)
 
-It differs from QGIS's Core copy functionality by only extracting the features WKT, rather than the entire record. Simply select a feature, press the button and the WKT,EWKT or JSON represenation will be displayed in a dialog box where you can copy its content for use in creating or updating geometries in SQL statements.
+It differs from QGIS's Core copy functionality by only extracting the features WKT, rather than the entire record. Simply select a feature, press the button and the WKT,EWKT or JSON representation will be displayed in a dialog box where you can copy its content for use in creating or updating geometries in SQL statements.
 
+# Check it out on Youtube
+[![](https://markdown-videos-api.jorgenkh.no/youtube/He2WfnmCVTI)](https://youtu.be/He2WfnmCVTI)
+
+# Lineage
 Based on the QGIS 2.0 Plugin of the same name by Hugo Ledoux https://github.com/hugoledoux/QGIS-getWKT. Migrated to QGIS 3.0 by Paul Skeen.
 
 # Compile (Windows)
@@ -38,7 +42,8 @@ On a system with OSGeo, open the OSGeo Shell and run build.bat in the project fo
 * 1.6 Bug Fixes
 * 1.7 Added support to export to multi and geom collection types and support reprojection via config
 * 1.7.1-2 Bug Fixes
-* 
+* 1.8 Implemented better epsg handling (Thanks anthony-scarth https://github.com/anthony-scarth #19 ), squished some decimal place errors and added additional error handles
+ 
 # Future Plans
 * Add option to pad string with ST_GEOMFROMTEXT/STGEOMFROMTEXT for use in PostGIS/MSSQL Spatial (Unknown ETA)
 * Add option for ESRI Json export
