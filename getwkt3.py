@@ -348,7 +348,17 @@ class getwkt3:
                 wkt = geom.asWkt(dp_count) if not dp_count is None else geom.asWkt()
             wkt = self.standardise_wkt(wkt)
             if out_type == 'ewkt':
-                text = 'SRID={0};{1}'.format(out_srs_epsg, wkt)
+                ewkt_epsg = out_srs_epsg
+                # if the output EPSG is set to not reproject (-1), try to get the EPSG from the layer instead
+                if ewkt_epsg == -1:
+                    try:
+                        authid = in_srs.authid()
+                        auth, ewkt_epsg = authid.split(':')
+                        if auth != 'EPSG':
+                            ewkt_epsg = -1
+                    except Exception:
+                        ewkt_epsg = -1
+                text = 'SRID={0};{1}'.format(ewkt_epsg, wkt)
             else:
                 text = wkt.upper()
         elif out_type == 'json':
