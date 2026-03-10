@@ -24,7 +24,7 @@
 import os.path
 
 # Load Core
-from qgis.core import QgsMapLayerType, QgsUnitTypes, QgsSettings, QgsGeometry, QgsGeometryCollection, QgsCoordinateReferenceSystem, QgsWkbTypes, QgsCoordinateTransform, QgsProject
+from qgis.core import QgsMapLayerType, QgsUnitTypes, QgsSettings, QgsGeometry, QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsProject
 
 # Load PyQt5
 from PyQt5.QtCore import QLocale, QTranslator, qVersion, QCoreApplication
@@ -59,7 +59,7 @@ class getwkt3:
         # initialize locale
         self.locale: str = QgsSettings().value("locale/userLocale", QLocale().name())[0:2]
         locale_path: str = os.path.join(self.plugin_dir , "resources" , "i18n" , f"getwkt3_{self.locale}.qm")
-        if os.path.exists(self.locale):
+        if os.path.exists(locale_path):
             self.translator = QTranslator()
             self.translator.load(locale_path)
             if qVersion() > '4.3.3':
@@ -88,6 +88,14 @@ class getwkt3:
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('getwkt3', message)
 
+    def show_error(self, message):
+        """Display an error message in the dialog.
+
+        Args:
+            message (str): The error message to display.
+        """
+        formatted_message = f'<strong style="color:red">ERROR:</strong> {message}'
+        self.dlg.wktTextEdit.setHtml(formatted_message)
 
     def add_action(
             self,
@@ -243,25 +251,22 @@ class getwkt3:
         selected_layer = mc.currentLayer()
         # Check if there is a selected layer
         if selected_layer is None:
-            self.dlg.wktTextEdit.setHtml('<strong style="color:red">'\
-            'ERROR:</strong> No selected layer')
+            self.show_error('No selected layer')
             return False
         # Check if selected layer is vector
         if selected_layer.type() != QgsMapLayerType.VectorLayer:
-            self.dlg.wktTextEdit.setHtml('<strong style="color:red">'\
-            'ERROR:</strong> Layer selected is not vector')
+            self.show_error('Layer selected is not vector')
             return False
         # Check if no features are selected
         if selected_layer.selectedFeatureCount() == 0:
-            self.dlg.wktTextEdit.setHtml('<strong style="color:red">'\
-            'ERROR:</strong> No feature selected')
+            self.show_error('No feature selected')
             return False
         # Check requested srs
         out_srs_epsg = self.s.value("getwkt3/srid", -1)
         try:
             out_srs_epsg = int(out_srs_epsg)
         except ValueError:
-            self.dlg.wktTextEdit.setHtml('<strong style="color:red"> ERROR:</strong> SRID must be an integer')
+            self.show_error('SRID must be an integer')
             return False
         # Load the SRS into an object for later use
         in_srs = selected_layer.crs()
@@ -269,15 +274,18 @@ class getwkt3:
         if out_srs_epsg != -1:
             out_srs = QgsCoordinateReferenceSystem(f"EPSG:{out_srs_epsg}")
             if not out_srs.isValid():
-                self.dlg.wktTextEdit.setHtml(f'<strong style="color:red">ERROR:</strong> Unknown or Invalid SRID {out_srs_epsg}')
+                self.show_error(f'Unknown or Invalid SRID {out_srs_epsg}')
                 return False
         # Get multi select setting
         multiselect = self.s.value("getwkt3/multiselect", False, bool)
-        multiselecttype = self.s.value("getwkt3/multiselecttype")
+        multiselecttype = self.s.value("getwkt3/multiselecttype", "multi")  # Default to "multi" if not set
+        # Validate multiselecttype
+        if multiselecttype not in ['multi', 'collection']:
+            multiselecttype = 'multi'  # Fallback to safe default
         # Collect selected features
         selected_features = selected_layer.selectedFeatures()
         if not multiselect and len(selected_features) > 1:
-            self.dlg.wktTextEdit.setHtml('<strong style="color:red">ERROR:</strong> More than one feature is selected. Multi sections are now supported but need to be enabled in the plugins config via Plugins -> Get WKT -> Open Config')
+            self.show_error('More than one feature is selected. Multi sections are now supported but need to be enabled in the plugins config via Plugins -> Get WKT -> Open Config')
             return False
         # Get geoms from selected features and reproject if required
         geoms = []
@@ -288,7 +296,7 @@ class getwkt3:
             if out_srs and not in_srs == out_srs:
                 transform = QgsCoordinateTransform(in_srs, out_srs, QgsProject.instance())
         except Exception as e:
-            self.dlg.wktTextEdit.setHtml(f'<strong style="color:red">ERROR:</strong> Error occured setting up transformation object. Please check the layer and output SRS {str(e)}')
+            self.show_error(f'Error occured setting up transformation object. Please check the layer and output SRS {str(e)}')
             return False
         # Process all selected features
         geoms = []
@@ -299,33 +307,58 @@ class getwkt3:
                     # Transform the geometry to the target CRS
                     geom.transform(transform)
                 except Exception as e:
-                    self.dlg.wktTextEdit.setHtml(f'<strong style="color:red">ERROR:</strong> Feature reprojection failed: {str(e)}')
+                    self.show_error(f'Feature reprojection failed: {str(e)}')
                     return False
             geoms.append(geom)
+        
+        # Check if we have any geometries to work with
+        if not geoms:
+            self.show_error('No valid geometries found in selected features')
+            return False
+            
         # Determine action
         if multiselect:
             # Collect as multi part
             if multiselecttype == 'multi':
                 # Collect geometries
-                geom = QgsGeometry.collectGeometry(geoms)
-                geom.convertToMultiType()
+                try:
+                    geom = QgsGeometry.collectGeometry(geoms)
+                    if not geom.isGeosValid():
+                        self.show_error('Failed to create valid multi-geometry from selected features')
+                        return False
+                    geom.convertToMultiType()
+                except Exception as e:
+                    self.show_error(f'Failed to collect geometries: {str(e)}')
+                    return False
             elif multiselecttype == 'collection':
                 geom = geoms
             else:
-                self.dlg.wktTextEdit.setHtml(f"<strong style='color:red'>ERROR:</strong> Multiselect type '{multiselecttype}' not supported")
-                return False
+                # This should not happen due to validation above, but handle it gracefully
+                self.show_error(f"Invalid multiselect type '{multiselecttype}'. Using multi-geometry instead.")
+                try:
+                    geom = QgsGeometry.collectGeometry(geoms)
+                    geom.convertToMultiType()
+                except Exception as e:
+                    self.show_error(f'Failed to create fallback multi-geometry: {str(e)}')
+                    return False
         else:
             geom = geoms[0]   
         #Setup dp for output
         dp_method = self.s.value("getwkt3/dpmethod")
         if dp_method == "custom":
             try:
-                dp_count = int(self.s.value("getwkt3/dpcustom"))
-            except ValueError:
-                dp_count = None
+                dp_custom = self.s.value("getwkt3/dpcustom")
+                if dp_custom is None:
+                    raise ValueError("No custom value set")
+                else:
+                    dp_count = int(dp_custom)
+            except (ValueError, TypeError):
+                # Invalid value, set default and save it
+                dp_count = 10
+                self.s.setValue("getwkt3/dpcustom", dp_count)
         elif dp_method == "auto":
             #Determine crs units
-            crs_units = out_srs.mapUnits()
+            crs_units = (out_srs or in_srs).mapUnits()
             #Allocate auto dp count based on crs units
             dp_count = {
                 QgsUnitTypes.DistanceUnit.DistanceFeet: 3,
@@ -342,7 +375,7 @@ class getwkt3:
             dp_count = None
         #Collect wkt
         if out_type == 'wkt' or out_type == 'ewkt':
-            if multiselecttype == 'collection':
+            if multiselect and multiselecttype == 'collection' and isinstance(geom, list):
                 wkt = f"GEOMETRYCOLLECTION ({', '.join([g.asWkt(dp_count) if not dp_count is None else g.asWkt() for g in geom])})"
             else:
                 wkt = geom.asWkt(dp_count) if not dp_count is None else geom.asWkt()
@@ -358,16 +391,31 @@ class getwkt3:
                             ewkt_epsg = -1
                     except Exception:
                         ewkt_epsg = -1
-                text = 'SRID={0};{1}'.format(ewkt_epsg, wkt)
+                # If we have a valid EPSG, format the EWKT
+                if ewkt_epsg == -1:
+                    self.show_error('No valid EPSG code found for EWKT output')
+                    return False    
+                else:
+                    text = f'SRID={ewkt_epsg};{wkt}'
             else:
                 text = wkt.upper()
         elif out_type == 'json':
-            if multiselecttype == 'collection':
+            if multiselect and multiselecttype == 'collection' and isinstance(geom, list):
                 json_d = {"type":"GeometryCollection","geometries":[]}
-                json_d["geometries"] = [json.loads(g.asJson(dp_count)) if not dp_count is None else json.loads(g.asJson()) for g in geom]
-                json_s = json.dumps(json_d)
+                try:
+                    json_d["geometries"] = [json.loads(g.asJson(dp_count)) if not dp_count is None else json.loads(g.asJson()) for g in geom]
+                    json_s = json.dumps(json_d)
+                except (json.JSONDecodeError, Exception) as e:
+                    self.show_error(f'Failed to generate JSON for geometry collection: {str(e)}')
+                    return False
             else:
-                json_s = geom.asJson(dp_count) if not dp_count is None else geom.asJson()
+                try:
+                    json_s = geom.asJson(dp_count) if not dp_count is None else geom.asJson()
+                    # Validate that the JSON is parseable
+                    json.loads(json_s)
+                except (json.JSONDecodeError, Exception) as e:
+                    self.show_error(f'Failed to generate valid JSON: {str(e)}')
+                    return False
             text = json_s
         else:
             text = '[{0}] Not Implemented'.format(out_type)
