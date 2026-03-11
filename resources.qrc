@@ -1,5 +1,5 @@
 <RCC>
-  <qresource prefix="/plugins/getwkt4">
+  <qresource prefix="/plugins/getwkt">
     <file>config.png</file>
     <file>ewkt.png</file>
     <file>wkt.png</file>
