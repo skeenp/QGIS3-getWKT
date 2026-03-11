@@ -13,11 +13,32 @@ The plugin can be configured via the 'Plugins' menu.
 
 ![](screenshot_qgis_menu.png)
 
-The config allows users to configure the default tool selected on the Toolbar, as well as specify the number of decimal places in text exported via the tool. The auto setting takes a guess at the number of decimal places that are appropriate based on the input layers CRS.
+## Features
+
+### Main Dialog
+- **Ctrl+C** - Copy WKT/EWKT/JSON to clipboard and close
+- **Escape** - Close dialog
+- Auto-selects copied text for visual feedback
+
+### Configuration Dialog
+- **Escape** - Save settings and close
+- Input validation for EPSG codes (integers only)
+- Comprehensive tooltips on all settings
+
+### Output Configuration
+
+The config allows users to configure:
+- **Default Tool** - Select which output type (WKT, EWKT, or JSON) is used by default
+- **Decimal Places** - Choose between:
+  - Default: Full precision decimals
+  - Auto: Automatically adjust based on CRS units
+  - Custom: Specify exact number of decimal places (0-20)
+- **Multi Selections** - Enable exporting multiple selected features as either Multipart geometries or GeometryCollections
+- **Output CRS** - Specify an EPSG code for coordinate transformation (use -1 for no transformation, uses layer's CRS)
 
 Users can also opt to support multi geometries via either multi-types or geometry collections. The default is for only single feature selections to be supported.
 
-The outptu CRS can now be supplied by specifying an ESPG code. The default is -1 which does not apply a transformation. This is useful if you have multiple source datasets and want to consistently move data to a single target with a specific CRS.
+The output CRS can now be supplied by specifying an EPSG code. The default is -1 which does not apply a transformation. This is useful if you have multiple source datasets and want to consistently move data to a single target with a specific CRS.
 
 ![](screenshot_config.png)
 
@@ -38,7 +59,12 @@ On a system with OSGeo, open the OSGeo Shell and run build.bat in the project fo
 * 1.6 Bug Fixes
 * 1.7 Added support to export to multi and geom collection types and support reprojection via config
 * 1.7.1-2 Bug Fixes
-* 
+* 1.8 Improved multi-geometry validation and error reporting
+* 1.9 Release for QGIS4/Qt6
+  - Migrated to PyQt6 and Qt6 with misc
+  - Added keyboard shortcuts: Ctrl+C for copy, Escape to close
+  
 # Future Plans
 * Add option to pad string with ST_GEOMFROMTEXT/STGEOMFROMTEXT for use in PostGIS/MSSQL Spatial (Unknown ETA)
-* Add option for ESRI Json export
+* Add option for ESRI Json export (Unknown ETA)
+* Use QGIS Projection selector

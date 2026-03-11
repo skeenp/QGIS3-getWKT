@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>getwkt3DialogBase</class>
- <widget class="QDialog" name="getwkt3DialogBase">
+ <class>getwkt4DialogBase</class>
+ <widget class="QDialog" name="getwkt4DialogBase">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>333</width>
-    <height>231</height>
+    <width>500</width>
+    <height>350</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>350</width>
+    <height>250</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Get WKT</string>
@@ -22,6 +28,9 @@
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QTextEdit" name="wktTextEdit">
+       <property name="toolTip">
+        <string>WKT/EWKT/JSON representation of the selected feature(s). Press Ctrl+C to copy and close.</string>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -29,15 +38,24 @@
      </item>
      <item>
       <widget class="QPushButton" name="copyButton">
+       <property name="toolTip">
+        <string>Copy to clipboard and close dialog (Ctrl+C)</string>
+       </property>
        <property name="text">
-        <string>Copy &amp;&amp; close</string>
+        <string>Copy &amp;&amp; Close</string>
+       </property>
+       <property name="default">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton">
+       <property name="toolTip">
+        <string>Close dialog (Escape)</string>
+       </property>
        <property name="text">
-        <string>OK</string>
+        <string>Close</string>
        </property>
       </widget>
      </item>

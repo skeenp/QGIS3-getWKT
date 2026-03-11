@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>getwkt4ConfigBase</class>
+ <widget class="QDialog" name="getwkt4ConfigBase">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>500</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>400</width>
+    <height>450</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Get WKT Configuration</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>wkt.png</normaloff>wkt.png</iconset>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="lblTitle">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>GetWKT Configuration</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="tool_lblActive">
+       <property name="font">
+        <font>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Active Tool</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="tool_lblLabel">
+       <property name="text">
+        <string>Setting the active tool requires restart to be applied</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="tool_cmbDefault">
+       <property name="toolTip">
+        <string>Select which output type (WKT, EWKT, or JSON) to use by default (requires restart)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="dp_lblSubTitle">
+       <property name="font">
+        <font>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Decimal Place Selector</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="dp_radDefault">
+       <property name="toolTip">
+        <string>Export with full decimal precision</string>
+       </property>
+       <property name="text">
+        <string>Do not truncate decimal places (Default)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="dp_radAuto">
+       <property name="toolTip">
+        <string>Automatically adjust decimal places based on the CRS units</string>
+       </property>
+       <property name="text">
+        <string>Automatically truncate decimal places</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="dp_radCustom">
+       <property name="toolTip">
+        <string>Specify a custom number of decimal places (0-20)</string>
+       </property>
+       <property name="text">
+        <string>Define a custom number of decimal places to export</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="dp_numCustom">
+       <property name="toolTip">
+        <string>Number of decimal places to use when custom option is selected</string>
+       </property>
+       <property name="maximum">
+        <number>20</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="ms_lblMultiSelect">
+       <property name="font">
+        <font>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Multi Selections</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="ms_chkMultiExport">
+       <property name="toolTip">
+        <string>Allow exporting multiple selected features at once</string>
+       </property>
+       <property name="text">
+        <string>Enable Multi Selection Exports</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="ms_radMulti">
+       <property name="toolTip">
+        <string>Export multiple features as a single MultiPart geometry</string>
+       </property>
+       <property name="text">
+        <string>Multipart Feature</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="ms_radGeomCollection">
+       <property name="toolTip">
+        <string>Export multiple features as a GeometryCollection</string>
+       </property>
+       <property name="text">
+        <string>Geometry Collection</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="srs_lblOutSrs">
+       <property name="font">
+        <font>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Output SRS</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="srs_lblExplanation">
+       <property name="text">
+        <string>EPSG code for output CRS (e.g., 4326 for WGS84), or -1 to use the layer's CRS</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="srs_intOutSrs">
+       <property name="toolTip">
+        <string>Enter an EPSG code (integer) or -1 for no reprojection</string>
+       </property>
+       <property name="text">
+        <string>-1</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnAccept">
+       <property name="toolTip">
+        <string>Save settings and close dialog (Escape)</string>
+       </property>
+       <property name="text">
+        <string>Save &amp;&amp; Close</string>
+       </property>
+       <property name="default">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

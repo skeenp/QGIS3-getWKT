@@ -1,7 +1,7 @@
-QGIS3-getWKT
+QGIS4-getWKT
 resources.py
 .vscode
 *.zip
-getwkt3_gpt.py
 esri.png
 esri.svg
+/__pycache__
